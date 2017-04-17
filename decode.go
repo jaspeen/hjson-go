@@ -226,9 +226,9 @@ func (p *hjsonParser) readKeyname() (string, error) {
 	}
 }
 
-// return classifier if found or nil
+// return qualifier if found or nil
 func (p *hjsonParser) white() *string {
-	var classifier *string
+	var qualifier *string
 	for p.ch > 0 {
 		// Skip whitespace.
 		for p.ch > 0 && p.ch <= ' ' {
@@ -258,12 +258,12 @@ func (p *hjsonParser) white() *string {
 			}
 			buf.Truncate(buf.Len()-1)
 			res := string(buf.Bytes())
-			classifier = &res
+			qualifier = &res
 		} else {
 			break
 		}
 	}
-	return classifier
+	return qualifier
 }
 
 func (p *hjsonParser) readTfnns() (interface{}, error) {
@@ -412,7 +412,7 @@ func (p *hjsonParser) readValue() (interface{}, error) {
 
 	// Parse a Hjson value. It could be an object, an array, a string, a number or a word.
 
-	classifier := p.white()
+	qualifier := p.white()
 	var val interface{}
 	var err error
 	switch p.ch {
@@ -430,10 +430,10 @@ func (p *hjsonParser) readValue() (interface{}, error) {
 		return nil, err
 	}
 
-	if classifier != nil {
+	if qualifier != nil {
 		object, ok := val.(map[string]interface{})
 		if ok {
-			object["@type"] = *classifier
+			object["@type"] = *qualifier
 		}
 
 		return object, nil
