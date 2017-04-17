@@ -226,7 +226,9 @@ func (p *hjsonParser) readKeyname() (string, error) {
 	}
 }
 
-func (p *hjsonParser) white() {
+// return classifier if found or nil
+func (p *hjsonParser) white() *string {
+	var classifier *string
 	for p.ch > 0 {
 		// Skip whitespace.
 		for p.ch > 0 && p.ch <= ' ' {
@@ -247,10 +249,21 @@ func (p *hjsonParser) white() {
 				p.next()
 				p.next()
 			}
+		} else if p.ch == '@' && p.peek(0) > ' ' {
+			var buf bytes.Buffer
+			for p.ch > 0 && p.ch > ' ' {
+
+				p.next()
+				buf.WriteByte(p.ch)
+			}
+			buf.Truncate(buf.Len()-1)
+			res := string(buf.Bytes())
+			classifier = &res
 		} else {
 			break
 		}
 	}
+	return classifier
 }
 
 func (p *hjsonParser) readTfnns() (interface{}, error) {
@@ -399,16 +412,33 @@ func (p *hjsonParser) readValue() (interface{}, error) {
 
 	// Parse a Hjson value. It could be an object, an array, a string, a number or a word.
 
-	p.white()
+	classifier := p.white()
+	var val interface{}
+	var err error
 	switch p.ch {
 	case '{':
-		return p.readObject(false)
+		val, err = p.readObject(false)
 	case '[':
-		return p.readArray()
+		val, err = p.readArray()
 	case '"':
-		return p.readString()
+		val, err = p.readString()
 	default:
-		return p.readTfnns()
+		val, err = p.readTfnns()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if classifier != nil {
+		object, ok := val.(map[string]interface{})
+		if ok {
+			object["@type"] = *classifier
+		}
+
+		return object, nil
+	} else {
+		return val, nil
 	}
 }
 
