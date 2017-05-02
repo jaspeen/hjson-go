@@ -329,7 +329,7 @@ func (p *hjsonParser) readArray() (value interface{}, err error) {
 	array := make([]interface{}, 0, 1)
 
 	p.next()
-	p.white()
+	qualifier := p.white()
 
 	if p.ch == ']' {
 		p.next()
@@ -338,21 +338,21 @@ func (p *hjsonParser) readArray() (value interface{}, err error) {
 
 	for p.ch > 0 {
 		var val interface{}
-		if val, err = p.readValue(); err != nil {
+		if val, err = p.readValueQualifier(qualifier); err != nil {
 			return nil, err
 		}
 		array = append(array, val)
-		p.white()
+		qualifier = p.white()
 		// in Hjson the comma is optional and trailing commas are allowed
 		if p.ch == ',' {
 			p.next()
-			p.white()
+			qualifier = p.white()
 		}
 		if p.ch == ']' {
 			p.next()
 			return array, nil
 		}
-		p.white()
+		qualifier = p.white()
 	}
 
 	return nil, p.errAt("End of input while parsing an array (did you forget a closing ']'?)")
@@ -409,6 +409,9 @@ func (p *hjsonParser) readObject(withoutBraces bool) (value interface{}, err err
 }
 
 func (p *hjsonParser) readValue() (interface{}, error) {
+	return p.readValueQualifier(nil)
+}
+func (p *hjsonParser) readValueQualifier(preQualifier *string) (interface{}, error) {
 
 	// Parse a Hjson value. It could be an object, an array, a string, a number or a word.
 
@@ -428,6 +431,10 @@ func (p *hjsonParser) readValue() (interface{}, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if qualifier == nil {
+		qualifier = preQualifier
 	}
 
 	if qualifier != nil {
