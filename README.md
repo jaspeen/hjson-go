@@ -1,6 +1,6 @@
 # thjson-go
 
-Experiment to add type qualifiers for json objects. Based on https://github.com/hjson/hjson-go hjson parser.
+Experiment to add type qualifiers for [hjson](https://hjson.org/) format. Based on https://github.com/hjson/hjson-go hjson parser.
 
 Idea is to have equivalent of [yaml tags](http://yaml.org/spec/1.2/spec.html#id2764295) to annotate objects with some word what can be interpreted by parser client to construct appropriate object from plain map.
 Following thjson:
