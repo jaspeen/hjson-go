@@ -1,7 +1,8 @@
 # thjson-go
 
-Experiment to add type qualifiers to json objects. Based on https://github.com/hjson/hjson-go hjson parser.
-Idea is to have analogue of yaml tags to annotate objects with some word what was interpreted by parser client to construct appropriate object from plain map.
+Experiment to add type qualifiers for json objects. Based on https://github.com/hjson/hjson-go hjson parser.
+
+Idea is to have equivalent of [yaml tags](http://yaml.org/spec/1.2/spec.html#id2764295) to annotate objects with some word what can be interpreted by parser client to construct appropriate object from plain map.
 Following thjson:
 ```
   {
@@ -41,14 +42,16 @@ will be translated to following structure:
     ]
   }
 ```
-Then *@type* property can be used to reconstruct object type
+Then **@type** property can be used to reconstruct object type
 # Install
 
 Make sure you have a working Go environment. See the [install instructions](http://golang.org/doc/install.html).
 
-To install thjson, simply run:
+To install thjson run:
 
-`go get -u github.com/jaspeen/thjson-go
+```sh
+go get -u github.com/jaspeen/thjson-go
+```
 
 # Usage
 See https://github.com/hjson/hjson-go
